@@ -1,0 +1,55 @@
+{
+  "kind": "collectionType",
+  "collectionName": "interactions",
+  "info": {
+    "singularName": "interaction",
+    "pluralName": "interactions",
+    "displayName": "Interaction"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "eventType": {
+      "type": "enumeration",
+      "enum": [
+        "view",
+        "add_to_cart",
+        "purchase",
+        "recommendation_impression",
+        "recommendation_click"
+      ],
+      "required": true
+    },
+    "sessionId": {
+      "type": "string",
+      "required": true
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "A",
+        "B"
+      ],
+      "required": true,
+      "default": "A"
+    },
+    "source": {
+      "type": "string"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "metadata": {
+      "type": "json"
+    }
+  }
+}
