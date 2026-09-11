@@ -1,0 +1,40 @@
+name: Build Strapi for Plesk
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/plesk-strapi-build.yml'
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      STRAPI_TELEMETRY_DISABLED: 'true'
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Upgrade Strapi to 5.53.0
+        run: npx --yes @strapi/upgrade@5.53.0 to 5.53.0 --yes
+      - name: Build production admin and server
+        run: npm run build
+        env:
+          NODE_ENV: production
+      - name: Verify build
+        run: |
+          node -e "const fs=require('fs');if(require('./package.json').dependencies['@strapi/strapi']!=='5.53.0'||!fs.existsSync('dist/build/index.html'))process.exit(1)"
+      - name: Package Plesk release
+        run: |
+          tar -czf strapi-5.53.0-plesk.tar.gz dist package.json package-lock.json
+          sha256sum strapi-5.53.0-plesk.tar.gz > strapi-5.53.0-plesk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: strapi-5.53.0-plesk
+          path: |
+            strapi-5.53.0-plesk.tar.gz
+            strapi-5.53.0-plesk.sha256
+          retention-days: 7
