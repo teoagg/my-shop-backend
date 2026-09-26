@@ -165,13 +165,14 @@ async function buildOrderFromCart(strapi: any, payloadItems: unknown) {
   return { items, total }
 }
 
-async function createOrder(strapi: any, userId: number, items: OrderLineItem[], total: number, status: 'pending' | 'paid') {
+async function createOrder(strapi: any, userId: number, items: OrderLineItem[], total: number, status: 'pending' | 'paid', paymentIntentId?: string) {
   return strapi.entityService.create('api::order.order', {
     data: {
       items,
       total,
       user: userId,
       status,
+      ...(paymentIntentId ? { paymentIntentId } : {}),
     },
     populate: ['user'],
   })
@@ -273,7 +274,7 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
         return ctx.badRequest('Payment amount does not match the cart.')
       }
 
-      const order = await createOrder(strapi, user.id, items, total, 'paid')
+      const order = await createOrder(strapi, user.id, items, total, 'paid', paymentIntent.id)
 
       return this.transformResponse(order)
     } catch (error) {

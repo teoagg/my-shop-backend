@@ -26,10 +26,17 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "orders"
     },
-	"status": {
-  	"type": "enumeration",
-  		"enum": ["pending", "paid", "cancelled"],
-  "default": "pending"
-	}
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "paid",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "paymentIntentId": {
+      "type": "string"
+    }
   }
 }
